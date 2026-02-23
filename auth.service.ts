@@ -10,7 +10,7 @@ import { Pool } from 'pg';
 import {
   User, Role, Permission, JwtPayload, AuthTokens,
   PermissionAction, ERP_MODULE, ApiResponse, AuditAction
-} from '@erp/types';
+} from './index';
 
 // ─── Token Service ───────────────────────────────────────────
 export class TokenService {
@@ -22,7 +22,7 @@ export class TokenService {
     private readonly jwtSecret: string,
     private readonly refreshSecret: string,
     private readonly redis: Redis
-  ) {}
+  ) { }
 
   generateTokens(payload: Omit<JwtPayload, 'iat' | 'exp'>): AuthTokens {
     const accessToken = jwt.sign(payload, this.jwtSecret, {
@@ -80,8 +80,8 @@ export class PermissionService {
   ): boolean {
     const permissionKey = `${module}:${action}`;
     return user.permissions.includes(permissionKey) ||
-           user.permissions.includes(`${module}:*`) ||
-           user.permissions.includes('*:*');
+      user.permissions.includes(`${module}:*`) ||
+      user.permissions.includes('*:*');
   }
 
   buildPermissionsArray(roles: Role[]): string[] {
@@ -101,7 +101,7 @@ export class PermissionService {
 
 // ─── Auth Repository ─────────────────────────────────────────
 export class AuthRepository {
-  constructor(private pool: Pool) {}
+  constructor(private pool: Pool) { }
 
   async findUserByEmail(email: string, tenantId: string): Promise<User | null> {
     const result = await this.pool.query(
@@ -189,7 +189,7 @@ export class AuthService {
     private authRepo: AuthRepository,
     private tokenService: TokenService,
     private permissionService: PermissionService
-  ) {}
+  ) { }
 
   async login(
     email: string,
@@ -337,7 +337,7 @@ export function createTenantMiddleware() {
       return;
     }
 
-    (req as Record<string, unknown>).tenantSlug = tenantSlug;
+    (req as any).tenantSlug = tenantSlug;
     next();
   };
 }
@@ -408,7 +408,7 @@ export function createAuthRouter(authService: AuthService): express.Router {
   router.post('/login', authRateLimiter, async (req, res) => {
     try {
       const { email, password, companyId } = req.body;
-      const tenantId = (req as Record<string, string>).tenantId;
+      const tenantId = (req as any).tenantId;
 
       if (!email || !password || !companyId) {
         res.status(400).json({

@@ -9,8 +9,8 @@ import { Pool } from 'pg';
 import { MongoClient, Db, Collection } from 'mongodb';
 import { Client as MinioClient } from 'minio';
 import Fuse from 'fuse.js';
-import { AuthenticatedRequest } from '@erp/auth';
-import { ApiResponse } from '@erp/types';
+import { AuthenticatedRequest } from './auth.service';
+import { ApiResponse } from './index';
 
 // ─── Column Mapping Memory (MongoDB) ─────────────────────────
 interface ColumnMappingRecord {

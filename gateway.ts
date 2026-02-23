@@ -8,7 +8,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
-import { authRateLimiter, apiRateLimiter } from '@erp/auth';
+import { authRateLimiter, apiRateLimiter } from './auth.service';
 
 const app = express();
 
