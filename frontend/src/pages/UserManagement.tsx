@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, UserPlus, Trash2, AlertCircle, ShieldCheck } from 'lucide-react';
-import axios from 'axios';
+import { UserPlus, Trash2, ShieldCheck } from 'lucide-react';
 
 interface User {
     id: string;
@@ -14,7 +13,6 @@ interface User {
 const UserManagement = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
@@ -24,9 +22,8 @@ const UserManagement = () => {
         password: ''
     });
 
-    const API_BASE = 'http://localhost:3000/auth';
-    // Note: In a real app, the token would be stored in localStorage/context
-    const token = localStorage.getItem('token');
+    // Note: 실제 운영 서버 주소 (배포 시 환경 변수 처리 권장)
+    // const API_BASE = 'http://localhost:3000/auth'; 
 
     const fetchUsers = async () => {
         try {
@@ -38,9 +35,8 @@ const UserManagement = () => {
                 { id: '2', email: 'user1@company.com', username: 'user1', firstName: 'John', lastName: 'Doe', isActive: true },
             ];
             setUsers(mockUsers);
-            setError(null);
         } catch (err) {
-            setError('사용자 목록을 불러오는데 실패했습니다.');
+            alert('사용자 목록을 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
         }
@@ -72,7 +68,7 @@ const UserManagement = () => {
 
         try {
             // In production: await axios.delete(`${API_BASE}/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-            alert('사용자가 삭제되었습니다.');
+            alert(`사용자(ID: ${id})가 삭제되었습니다.`);
             fetchUsers();
         } catch (err) {
             alert('삭제 실패');
