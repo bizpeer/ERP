@@ -1,0 +1,141 @@
+version: '3.9'
+
+# Docker Compose Override for Development
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# This enables volume mounts for hot reload and development debugging
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      NODE_ENV: development
+      DEBUG: "erp:*"
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Node debugger
+    command: npm run dev
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - node_modules
+            - dist
+        - action: rebuild
+          path: package.json
+          target: /app
+
+  auth-service:
+    volumes:
+      - ./services/auth-service:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      NODE_ENV: development
+      DEBUG: "erp:*"
+    ports:
+      - "9230:9229"
+    develop:
+      watch:
+        - action: sync
+          path: ./services/auth-service
+          target: /app
+          ignore:
+            - node_modules
+            - dist
+        - action: rebuild
+          path: ./services/auth-service/package.json
+          target: /app
+
+  sales-service:
+    volumes:
+      - ./services/sales-service:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      NODE_ENV: development
+      DEBUG: "erp:*"
+    ports:
+      - "9231:9229"
+    develop:
+      watch:
+        - action: sync
+          path: ./services/sales-service
+          target: /app
+          ignore:
+            - node_modules
+            - dist
+
+  purchase-service:
+    volumes:
+      - ./services/purchase-service:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      NODE_ENV: development
+      DEBUG: "erp:*"
+    ports:
+      - "9232:9229"
+
+  inventory-service:
+    volumes:
+      - ./services/inventory-service:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      NODE_ENV: development
+      DEBUG: "erp:*"
+    ports:
+      - "9233:9229"
+
+  production-service:
+    volumes:
+      - ./services/production-service:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      NODE_ENV: development
+      DEBUG: "erp:*"
+    ports:
+      - "9234:9229"
+
+  accounting-service:
+    volumes:
+      - ./services/accounting-service:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      NODE_ENV: development
+      DEBUG: "erp:*"
+    ports:
+      - "9235:9229"
+
+  tenant-service:
+    volumes:
+      - ./services/tenant-service:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      NODE_ENV: development
+      DEBUG: "erp:*"
+    ports:
+      - "9236:9229"
+
+  excel-engine:
+    volumes:
+      - ./services/excel-engine:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      NODE_ENV: development
+      DEBUG: "erp:*"
+    ports:
+      - "9237:9229"

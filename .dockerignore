@@ -1,0 +1,62 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build & Dist
+dist
+build
+*.tsbuildinfo
+
+# Testing
+coverage
+.nyc_output
+test
+tests
+*.test.ts
+*.spec.ts
+vitest.config.ts
+
+# Documentation
+README.md
+CHANGELOG.md
+*.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.circleci
+.travis.yml
+
+# Docker
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile
+.dockerignore
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+logs
+*.log

@@ -1,0 +1,53 @@
+{
+  "name": "erp-saas-refactored",
+  "version": "1.0.0",
+  "description": "Refactored ERP SaaS System",
+  "main": "gateway.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx gateway.ts",
+    "dev": "tsx watch gateway.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "ioredis": "^5.3.2",
+    "mongodb": "^6.3.0",
+    "amqplib": "^0.10.3",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "express-rate-limit": "^7.1.5",
+    "http-proxy-middleware": "^3.0.0",
+    "swagger-ui-express": "^5.0.0",
+    "dotenv": "^16.3.1",
+    "multer": "^1.4.5-lts.1",
+    "xlsx": "^0.18.5",
+    "fuse.js": "^7.0.0",
+    "minio": "^7.1.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.5",
+    "@types/pg": "^8.10.9",
+    "@types/amqplib": "^0.10.4",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/morgan": "^1.9.9",
+    "@types/swagger-ui-express": "^4.1.6",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0",
+    "@types/multer": "^1.4.11"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
