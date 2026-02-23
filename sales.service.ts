@@ -11,7 +11,7 @@ import {
   QueryParams, PaginatedResponse, ERPEvent, Money,
   ERP_MODULE, PermissionAction
 } from './index';
-import { BaseRepository } from './base.repository';
+import { BaseRepository, QueryBuilder } from './base.repository';
 import { AuthenticatedRequest, createPermissionMiddleware } from './auth.service';
 import { MessageBus } from './message-bus.service';
 import { AuditService } from './audit.service';
@@ -73,8 +73,14 @@ export class SalesOrderRepository extends BaseRepository<SalesOrder> {
     id: string,
     tenantId: string,
     status: SalesOrderStatus,
-    userId: string
+    userId: string,
+    isAdmin: boolean = false // 관리자 권한 여부 추가
   ): Promise<void> {
+    const existing = await this.findById(id, tenantId);
+    if (existing) {
+      this.checkTimeLimit(existing, isAdmin);
+    }
+
     await this.pool.query(
       `UPDATE sales_orders SET status = $1, updated_by = $2, updated_at = NOW(), version = version + 1
        WHERE id = $3 AND tenant_id = $4 AND is_deleted = FALSE`,
@@ -109,9 +115,9 @@ export class SalesOrderRepository extends BaseRepository<SalesOrder> {
     return result.rows[0];
   }
 
-  protected applySearch(qb: ReturnType<typeof import('@erp/database').QueryBuilder>, search: string): void {
+  protected applySearch(qb: QueryBuilder, search: string): void {
     qb.where(
-      `(so.order_number ILIKE $${(qb as Record<string, unknown>).paramIndex} OR so.customer_name ILIKE $${(qb as Record<string, unknown>).paramIndex})`,
+      `(so.order_number ILIKE $${(qb as any).paramIndex} OR so.customer_name ILIKE $${(qb as any).paramIndex})`,
       `%${search}%`
     );
   }
@@ -135,8 +141,8 @@ export class SalesOrderRepository extends BaseRepository<SalesOrder> {
       shippingAmount: Number(row.shipping_amount),
       total: Number(row.total),
       totalInBaseCurrency: Number(row.total_in_base_currency),
-      billingAddress: row.billing_address as ReturnType<() => import('@erp/types').Address>,
-      shippingAddress: row.shipping_address as ReturnType<() => import('@erp/types').Address>,
+      billingAddress: row.billing_address as any,
+      shippingAddress: row.shipping_address as any,
       paymentTerms: row.payment_terms as string,
       expectedDeliveryDate: row.expected_delivery_date as Date,
       notes: row.notes as string,

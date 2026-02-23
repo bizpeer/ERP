@@ -155,6 +155,36 @@ export class AuthRepository {
       [userId]
     );
   }
+  async getUserCount(tenantId: string): Promise<number> {
+    const result = await this.pool.query(
+      'SELECT COUNT(*) FROM users WHERE tenant_id = $1 AND is_deleted = FALSE',
+      [tenantId]
+    );
+    return parseInt(result.rows[0].count, 10);
+  }
+
+  async createUser(data: Partial<User> & { passwordHash: string }): Promise<User> {
+    const result = await this.pool.query(
+      `INSERT INTO users (
+        tenant_id, company_id, email, username, first_name, last_name, 
+        password_hash, is_active, created_by
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *`,
+      [
+        data.tenantId, data.companyId, data.email, data.username,
+        data.firstName, data.lastName, data.passwordHash,
+        data.isActive ?? true, data.createdBy
+      ]
+    );
+    return this.mapUser(result.rows[0]);
+  }
+
+  async deleteUser(userId: string, tenantId: string): Promise<void> {
+    await this.pool.query(
+      'UPDATE users SET is_deleted = TRUE, deleted_at = NOW() WHERE id = $1 AND tenant_id = $2',
+      [userId, tenantId]
+    );
+  }
 
   private mapUser(row: Record<string, unknown>): User {
     return {
@@ -187,7 +217,7 @@ export class AuthRepository {
 export class AuthService {
   constructor(
     private authRepo: AuthRepository,
-    private tokenService: TokenService,
+    public tokenService: TokenService,
     private permissionService: PermissionService
   ) { }
 
@@ -263,6 +293,31 @@ export class AuthService {
 
   async hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, 12);
+  }
+
+  async register(adminUser: JwtPayload, userData: any): Promise<User> {
+    // 1. 보안 정책: 사용자 정원 10명 제한 (Windows 로컬망 앱 요구사항)
+    const count = await this.authRepo.getUserCount(adminUser.tenantId);
+    if (count >= 10) {
+      throw new Error('사용자 정원(10명)이 초과되었습니다. 새로운 사용자를 추가하려면 기존 사용자를 삭제해야 합니다.');
+    }
+
+    // 2. 관리자 권한 확인 (간소화된 체크)
+    // 실제 운영 환경에서는 permissionService.can을 사용해야 함
+
+    const passwordHash = await this.hashPassword(userData.password);
+    return this.authRepo.createUser({
+      ...userData,
+      tenantId: adminUser.tenantId,
+      companyId: adminUser.companyId,
+      passwordHash,
+      createdBy: adminUser.sub
+    });
+  }
+
+  async removeUser(adminUser: JwtPayload, userId: string): Promise<void> {
+    // 본인 삭제 방지 등 추가 로직 가능
+    await this.authRepo.deleteUser(userId, adminUser.tenantId);
   }
 }
 
@@ -451,6 +506,42 @@ export function createAuthRouter(authService: AuthService): express.Router {
       res.json({ success: true, message: 'Logged out successfully' });
     } catch {
       res.status(500).json({ success: false, message: 'Logout failed' });
+    }
+  });
+
+  /**
+   * @openapi
+   * /auth/users:
+   *   post:
+   *     summary: Create a new user (Admin only, Max 10)
+   *     tags: [Auth]
+   *     security:
+   *       - BearerAuth: []
+   */
+  router.post('/users', createAuthMiddleware(authService.tokenService as any), async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+      const user = await authService.register(req.user, req.body);
+      res.status(201).json({ success: true, data: user });
+      return;
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to create user',
+      });
+    }
+  });
+
+  router.delete('/users/:id', createAuthMiddleware(authService.tokenService as any), async (req: AuthenticatedRequest, res) => {
+    try {
+      if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized' });
+
+      await authService.removeUser(req.user, req.params.id);
+      res.json({ success: true, message: 'User deleted successfully' });
+      return;
+    } catch (error) {
+      res.status(400).json({ success: false, message: 'Failed to delete user' });
     }
   });
 

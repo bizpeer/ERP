@@ -351,11 +351,15 @@ export abstract class BaseRepository<T extends BaseEntity> {
     tenantId: string,
     data: Partial<T>,
     userId: string,
+    isAdmin: boolean = false, // 관리자 권한 여부 추가
     client?: PoolClient
   ): Promise<T | null> {
     const db = client || this.pool;
     const existing = await this.findById(id, tenantId);
     if (!existing) return null;
+
+    // ─── Windows 로컬망 보안 정책: 1시간 수정 제한 ───
+    this.checkTimeLimit(existing, isAdmin);
 
     const { setClause, values } = this.buildUpdateData(data);
 
@@ -384,11 +388,15 @@ export abstract class BaseRepository<T extends BaseEntity> {
     id: string,
     tenantId: string,
     userId: string,
+    isAdmin: boolean = false, // 관리자 권한 여부 추가
     client?: PoolClient
   ): Promise<boolean> {
     const db = client || this.pool;
     const existing = await this.findById(id, tenantId);
     if (!existing) return false;
+
+    // ─── Windows 로컬망 보안 정책: 1시간 수정 제한 ───
+    this.checkTimeLimit(existing, isAdmin);
 
     const result = await db.query(
       `UPDATE ${this.tableName}
@@ -403,6 +411,15 @@ export abstract class BaseRepository<T extends BaseEntity> {
     await this.trackChanges(id, tenantId, userId, AuditAction.DELETE, existing as Partial<T>, undefined);
 
     return true;
+  }
+
+  protected checkTimeLimit(existing: T, isAdmin: boolean): void {
+    const oneHour = 60 * 60 * 1000;
+    const elapsed = Date.now() - new Date(existing.createdAt).getTime();
+
+    if (elapsed > oneHour && !isAdmin) {
+      throw new Error('데이터 생성 후 1시간이 경과하여 수정/삭제가 불가능합니다. 관리자의 승인이 필요합니다.');
+    }
   }
 
   protected async invalidateCache(tenantId: string, id?: string): Promise<void> {
