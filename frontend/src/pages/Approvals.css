@@ -1,0 +1,96 @@
+.approvals-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.approvals-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.approvals-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.approvals-table th,
+.approvals-table td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.approvals-table th {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-badge.PENDING_TEAM,
+.status-badge.PENDING_HEAD {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.status-badge.APPROVED {
+    background: rgba(34, 197, 94, 0.2);
+    color: #4ade80;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.icon-btn:hover {
+    transform: scale(1.2);
+}
+
+.paper-container {
+    display: flex;
+    justify-content: center;
+    background: #f8fafc;
+    padding: 40px;
+    border-radius: 12px;
+}
+
+.create-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    margin-top: 16px;
+}
+
+.create-form input,
+.create-form select,
+.create-form textarea {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

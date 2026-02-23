@@ -11,7 +11,8 @@ import {
     ArrowUpRight,
     TrendingUp,
     DollarSign,
-    Activity
+    Activity,
+    ClipboardCheck
 } from 'lucide-react';
 import {
     Chart as ChartJS,
@@ -26,6 +27,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import UserManagement from './pages/UserManagement';
+import Approvals from './pages/Approvals';
 
 ChartJS.register(
     CategoryScale,
@@ -80,6 +82,9 @@ const App = () => {
                     <a href="#" className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
                         <LayoutDashboard size={20} /> Dashboard
                     </a>
+                    <a href="#" className={`nav-item ${activeTab === 'approvals' ? 'active' : ''}`} onClick={() => setActiveTab('approvals')}>
+                        <ClipboardCheck size={20} /> 전자결재 (기안)
+                    </a>
                     <a href="#" className={`nav-item ${activeTab === 'sales' ? 'active' : ''}`} onClick={() => setActiveTab('sales')}>
                         <ShoppingCart size={20} /> Sales
                     </a>
@@ -106,7 +111,7 @@ const App = () => {
                 <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                     <div>
                         <h1 style={{ fontSize: '2rem', margin: '0 0 8px 0' }}>Welcome back, Admin</h1>
-                        <p style={{ color: 'var(--text-muted)', margin: 0 }}>사내 로컬망 ERP 시스템에 접속되었습니다.</p>
+                        <p style={{ color: 'var(--text-muted)', margin: 0 }}>사내 로컬망 ERP 시스템에 접속되었습니다. 최종 결재 문서는 대표이사 및 회계본부장이 열람 가능합니다.</p>
                     </div>
 
                     <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -131,6 +136,8 @@ const App = () => {
 
                 {activeTab === 'users' ? (
                     <UserManagement />
+                ) : activeTab === 'approvals' ? (
+                    <Approvals />
                 ) : (
                     <>
                         {/* Stats Grid */}
