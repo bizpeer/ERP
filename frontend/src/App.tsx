@@ -25,6 +25,7 @@ import {
     Filler
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import UserManagement from './pages/UserManagement';
 
 ChartJS.register(
     CategoryScale,
@@ -85,8 +86,8 @@ const App = () => {
                     <a href="#" className={`nav-item ${activeTab === 'inventory' ? 'active' : ''}`} onClick={() => setActiveTab('inventory')}>
                         <Package size={20} /> Inventory
                     </a>
-                    <a href="#" className={`nav-item ${activeTab === 'customers' ? 'active' : ''}`} onClick={() => setActiveTab('customers')}>
-                        <Users size={20} /> Customers
+                    <a href="#" className={`nav-item ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>
+                        <Users size={20} /> Users (Admin)
                     </a>
                     <a href="#" className={`nav-item ${activeTab === 'accounting' ? 'active' : ''}`} onClick={() => setActiveTab('accounting')}>
                         <FileText size={20} /> Accounting
@@ -105,7 +106,7 @@ const App = () => {
                 <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                     <div>
                         <h1 style={{ fontSize: '2rem', margin: '0 0 8px 0' }}>Welcome back, Admin</h1>
-                        <p style={{ color: 'var(--text-muted)', margin: 0 }}>Here's what's happening with your store today.</p>
+                        <p style={{ color: 'var(--text-muted)', margin: 0 }}>사내 로컬망 ERP 시스템에 접속되었습니다.</p>
                     </div>
 
                     <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -128,70 +129,76 @@ const App = () => {
                     </div>
                 </header>
 
-                {/* Stats Grid */}
-                <section className="stat-grid">
-                    <div className="glass-card stat-card">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
-                            <span>Total Revenue</span>
-                            <DollarSign size={18} />
-                        </div>
-                        <div className="stat-value">$128,430</div>
-                        <div style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
-                            <TrendingUp size={14} /> +12.5% vs last month
-                        </div>
-                    </div>
-
-                    <div className="glass-card stat-card">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
-                            <span>Active Orders</span>
-                            <ShoppingCart size={18} />
-                        </div>
-                        <div className="stat-value">642</div>
-                        <div style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
-                            <TrendingUp size={14} /> +8.2% vs last month
-                        </div>
-                    </div>
-
-                    <div className="glass-card stat-card">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
-                            <span>Inventory Status</span>
-                            <Package size={18} />
-                        </div>
-                        <div className="stat-value">94.2%</div>
-                        <div style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
-                            <Activity size={14} /> Healthy
-                        </div>
-                    </div>
-                </section>
-
-                {/* Charts Section */}
-                <section style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
-                    <div className="glass-card" style={{ padding: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-                            <h3 style={{ margin: 0 }}>Revenue Analytics</h3>
-                            <button className="btn-primary" style={{ padding: '6px 12px', fontSize: '0.875rem' }}>View Report</button>
-                        </div>
-                        <div style={{ height: '300px' }}>
-                            <Line data={chartData} options={chartOptions} />
-                        </div>
-                    </div>
-
-                    <div className="glass-card" style={{ padding: '24px' }}>
-                        <h3 style={{ margin: '0 0 24px 0' }}>Recent Activity</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            {[1, 2, 3, 4].map(idx => (
-                                <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }}></div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '0.875rem' }}>Order #PO-2024-{idx}01 confirmed</div>
-                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>2 hours ago</div>
-                                    </div>
-                                    <ArrowUpRight size={14} color="#94a3b8" />
+                {activeTab === 'users' ? (
+                    <UserManagement />
+                ) : (
+                    <>
+                        {/* Stats Grid */}
+                        <section className="stat-grid">
+                            <div className="glass-card stat-card">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
+                                    <span>Total Revenue</span>
+                                    <DollarSign size={18} />
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
+                                <div className="stat-value">$128,430</div>
+                                <div style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
+                                    <TrendingUp size={14} /> +12.5% vs last month
+                                </div>
+                            </div>
+
+                            <div className="glass-card stat-card">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
+                                    <span>Active Orders</span>
+                                    <ShoppingCart size={18} />
+                                </div>
+                                <div className="stat-value">642</div>
+                                <div style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
+                                    <TrendingUp size={14} /> +8.2% vs last month
+                                </div>
+                            </div>
+
+                            <div className="glass-card stat-card">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)' }}>
+                                    <span>Inventory Status</span>
+                                    <Package size={18} />
+                                </div>
+                                <div className="stat-value">94.2%</div>
+                                <div style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.875rem' }}>
+                                    <Activity size={14} /> Healthy
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Charts Section */}
+                        <section style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+                            <div className="glass-card" style={{ padding: '24px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+                                    <h3 style={{ margin: 0 }}>Revenue Analytics</h3>
+                                    <button className="btn-primary" style={{ padding: '6px 12px', fontSize: '0.875rem' }}>View Report</button>
+                                </div>
+                                <div style={{ height: '300px' }}>
+                                    <Line data={chartData} options={chartOptions} />
+                                </div>
+                            </div>
+
+                            <div className="glass-card" style={{ padding: '24px' }}>
+                                <h3 style={{ margin: '0 0 24px 0' }}>Recent Activity</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    {[1, 2, 3, 4].map(idx => (
+                                        <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }}></div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontSize: '0.875rem' }}>Order #PO-2024-{idx}01 confirmed</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>2 hours ago</div>
+                                            </div>
+                                            <ArrowUpRight size={14} color="#94a3b8" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+                    </>
+                )}
             </main>
         </div>
     );
